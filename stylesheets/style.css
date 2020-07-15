@@ -1,5 +1,6 @@
 * {
-  box-sizing: border-box; }
+  box-sizing: border-box; 
+}
 
 body {
   padding: 0;
@@ -11,7 +12,8 @@ body {
   color: #fff;
   text-align: center;
   background-color: #159957;
-  background-image: linear-gradient(120deg, #155799, #159957); }
+  background-image: linear-gradient(120deg, #155799, #159957); 
+}
 
 a .btn {
   display: inline-block;
