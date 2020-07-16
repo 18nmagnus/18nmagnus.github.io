@@ -25,15 +25,15 @@ body {
 
 @media screen and (min-width: 64em) {
   .page-header {
-    padding: 5rem 6rem; } }
+    padding: 4rem 4rem; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
-    padding: 3rem 4rem; } }
+    padding: 2rem 2rem; } }
 
 @media screen and (max-width: 42em) {
   .page-header {
-    padding: 2rem 1rem; } }
+    padding: 1rem 1rem; } }
 
 .project-name {
   margin-top: 0;
@@ -54,7 +54,7 @@ body {
 .project-tagline {
   margin-bottom: 2rem;
   font-weight: normal;
-  opacity: 0.7; }
+  opacity: 0.8; }
 
 @media screen and (min-width: 64em) {
   .project-tagline {
@@ -84,6 +84,14 @@ a {
   border-radius: 0.3rem;
   transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 }
+.btn + .btn {
+  margin-left: 1rem; }
+
+.btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3); }
 
 @media screen and (min-width: 64em) {
   .btn {
@@ -103,3 +111,24 @@ a {
     .btn + .btn {
       margin-top: 1rem;
       margin-left: 0; } }
+
+.main-heading {
+  color: #d4470f;
+  font-size: 1.75em;
+  padding: 0.25rem 10rem;
+  text-align: left;
+}
+
+.main-par {
+  color: gray;
+  font-size: 1.3em;
+  padding: 0.25rem 10rem;
+}
+
+.link {
+  font-weight: bold;
+}
+
+.link:hover {
+  color: #d4470f;
+}
