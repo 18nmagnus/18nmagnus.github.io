@@ -5,16 +5,137 @@
         <title>SciHound - Manual</title>
         <link rel="stylesheet" type="text/css" href="./stylesheets/style.css" media="screen">
         <link rel="stylesheet" type="text/css" href="./stylesheets/normalize.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="./stylesheets/manual.css" media="screen">
     </head>
 
-    <body>
+    <body class="manual-body">
         <header class="page-header">
             <h1 class="project-name">User Manual</h1>
             <h2 class="project-tagline">A guide to collecting data with SciHound.</h2>
             <a href="./index.html" class="btn">Return to Home Page</a>
         </header>
 
+        <div class="image-container">
+            <img src="./photos/A603D9E6-65D6-4BEF-BDEA-C4CDDD7E4CA9.jpeg" style="width:100%;">
+        </div>
+        <div class="description">
+            <h2 class="manual-heading">1. Opening the App</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+
+        <div class="image-container">
+            <img src="./photos/7EC0D549-F807-4D63-8483-8C7DEE71F4CC.jpeg" style="width:100%">
+        </div>
+        <div class="description">
+            <h2 class="manual-heading">2. Entering your credentials.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+
+        <div class="image-container hidden">
+            <img src="./photos/9CDA661B-DFC7-44A3-BF9E-E79716F6FAF4.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">3. Authentication.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+
+        <div class="image-container hidden">
+            <img src="./photos/07EA2CC8-10E6-49F7-9B72-C916EAC05D19.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">4. Choosing a Project.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
         
+        <div class="image-container hidden">
+            <img src="./photos/6B14AFDB-367F-439A-B47A-0A4FA5617314.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">5. Collecting the Data.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+        
+        <div class="image-container hidden">
+            <img src="./photos/3C0E5637-8A92-4D0F-AA27-EA8A5CF1FB26.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">6. Classifying a Point.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+        
+        <div class="image-container hidden">
+            <img src="./photos/BB758BD1-0996-4FA6-8987-B2E28EFFA9B4.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">7. Taking a Photo of a Point.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+        
+        <div class="image-container hidden">
+            <img src="./photos/D5FFBDFC-E461-47EA-902D-29A406BB40D1.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">8. Completing Data Collection.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+        
+        <div class="image-container hidden">
+            <img src="./photos/7E0A3611-2A50-4D93-B7B7-830324AFC6CB.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">9. Viewing your Points.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+        
+        <div class="image-container hidden">
+            <img src="./photos/72A09A44-EA4E-4A36-8BBE-6DA0EF2AB734.jpeg" style="width:100%">
+        </div>
+        <div class="description hidden">
+            <h2 class="manual-heading">10. Clearing your Points.</h2>
+            <p class="manual-paragraph"></p>
+        </div>
+
+        <div id="button-container">
+            <button class="button" onclick="plusSlides(2)">Next &#10095;</button>
+            <button class="button" onclick="plusSlides(-2)">Prev  &#10094;</button>
+        </div>
+
+        
+        <script>
+
+            var slideIndex = 1;
+            showSlides(slideIndex);
+
+            // Next/previous controls
+            function plusSlides(n) {
+                showSlides(slideIndex += n);
+            }
+
+            function showSlides(n) {
+                var slides = document.getElementsByClassName("image-container");
+                var descriptions = document.getElementsByClassName("description");
+                if (n > slides.length) {slideIndex = 1}
+                if (n < 1) {slideIndex = slides.length-1}
+
+                for(var i = 0; i < n-1; i++) {
+                    slides[i].style.display = "none";
+                    descriptions[i].style.display = "none";
+                }
+
+                for(var i = n+1; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                    descriptions[i].style.display = "none";
+                }
+
+                slides[slideIndex-1].style.display = "block";
+                descriptions[slideIndex-1].style.display = "block";
+                slides[slideIndex].style.display = "block";
+                descriptions[slideIndex].style.display = "block";
+            }
+
+        </script>
+
+
     </body>
 
 
