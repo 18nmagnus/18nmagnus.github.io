@@ -9,12 +9,41 @@
     </head>
 
     <body>
-        <header class="page-header">
+        <header class="page-header fill-screen">
             <h1 class="project-name">Account Requests</h1>
             <h2 class="project-tagline">Submit requests for SciHound access here.</h2>
             <a href="./index.html" class="btn">Return to Home Page</a>
+            <br />
+
+            <form
+            action="https://formspree.io/xyynnypp"
+            method="POST"
+            >
+            <label class="form-heading">
+                Name:
+                <input class="input" type="text" name="name" required>
+            </label>
+            <br />
+            <label class="form-heading">
+                Email:
+                <input class="input" type="email" name="_replyto" required>
+            </label>
+            <br />
+            <br />
+            <label class="form-heading"> 
+                Background/Field Experience:
+                <br />
+                <textarea class="input" name="experience" rows="4" cols="25" required></textarea>
+            </label>
+            <br />
+
+            <!-- your other form fields go here -->
+
+            <button class="form-btn" type="submit">Submit</button>
+        </form>
         </header>
 
+        
 
 
     </body>
