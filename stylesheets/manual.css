@@ -7,13 +7,13 @@
 
 .description {
     color: black;
-    font-size: 17px;
+    font-size: 16px;
     font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     padding: 3rem 3rem;
     width: 20rem; 
     float: left; 
     height:40rem; 
-    margin:10px
+    margin:10px;
 }
 
 .manual-body {
@@ -28,7 +28,7 @@
 
 .manual-paragraph {
   color: gray;
-  font-size: 1.3em;
+  font-size: 1.2em;
 }
 
 #button-container {
