@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="UTF-8">
+        <title>SciHound - Admin Login</title>
+        <link rel="stylesheet" type="text/css" href="./stylesheets/style.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="./stylesheets/normalize.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="./stylesheets/form.css" media="screen">
+    </head>
+
+    <body>
+        <header class="page-header fill-screen">
+            <h1 class="project-name">Admin Login</h1>
+            <h2 class="project-tagline">Log in to see collected point data.</h2>
+            <a href="./index.html" class="btn">Return to Home Page</a>
+            <br />
+
+            <form
+            action="./admin.php"
+            method="POST"
+            >
+            <label class="form-heading">
+                Email:
+                <input class="input" type="email" name="_replyto" required>
+            </label>
+            <br />
+            <label class="form-heading"> 
+                Password:
+                <input class="input" type="password" name="password" required>
+            </label>
+            <br />
+
+            <!-- your other form fields go here -->
+
+            <button class="form-btn" type="submit">Submit</button>
+        </form>
+        </header>
+
+    </body>
+
+
+</html>
