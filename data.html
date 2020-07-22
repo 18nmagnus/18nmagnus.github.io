@@ -9,11 +9,53 @@
     </head>
 
     <body>
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
+
+        <script>
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyB-NS4PfFihzVFhZRNXzD0obUZuaBIirso",
+                authDomain: "scihound-776c7.firebaseapp.com",
+                databaseURL: "https://scihound-776c7.firebaseio.com",
+                projectId: "scihound-776c7",
+                storageBucket: "scihound-776c7.appspot.com",
+                messagingSenderId: "667225946605",
+                appId: "1:667225946605:web:bde09af987c1fb64044fe4",
+                measurementId: "G-MQSTQVRLKP"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+        </script>
+
         <header class="page-header">
             <h1 class="project-name">Collected Data</h1>
             <h2 class="project-tagline">A visual library of point data collected by users.</h2>
-            <a href="./admin.html" class="btn">Sign Out</a>
+            <a href="./index.html" class="btn">Return to Home</a>
+           <div class="dropdown">
+            <button class="dropbtn">Select a Project:</button>
+            <div class="dropdown-content">
+              <a href="#">Floods</a>
+              <a href="#">Oil Palms</a>
+              <a href="#">Earthquakes</a>
+              <a href="#">Fire</a>
+            </div>
+          </div>
         </header>
+
+        <script>
+           /** document.getElementById("signOutButton").onclick = function () {
+                firebase.auth().signOut();
+                location.href = "/admin.html";
+            }
+            */
+        </script>
 
     </body>
 
