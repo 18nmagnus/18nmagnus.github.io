@@ -16,6 +16,7 @@
         https://firebase.google.com/docs/web/setup#available-libraries -->
         <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.17.0/firebase-firestore.js"></script>
 
         <script>
             // Your web app's Firebase configuration
@@ -32,6 +33,9 @@
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             firebase.analytics();
+            const firebase = require("firebase");
+            // Required for side-effects
+            require("firebase/firestore");
         </script>
 
         <header class="page-header">
@@ -41,20 +45,48 @@
            <div class="dropdown">
             <button class="dropbtn">Select a Project:</button>
             <div class="dropdown-content">
-              <a href="#">Floods</a>
-              <a href="#">Oil Palms</a>
-              <a href="#">Earthquakes</a>
-              <a href="#">Fire</a>
+              <button id="floods">Floods</button>
+              <button id="oilpalms">Oil Palms</button>
+              <button id="earthquakes">Earthquakes</button>
+              <button id="fire">Fire</button>
             </div>
           </div>
         </header>
 
+        <div class="data-container" id="data">
+            <h2 id="info" class="main-heading" style="text-align: center;">Select a project above to see collected data.</h2>
+        </div>
+
         <script>
-           /** document.getElementById("signOutButton").onclick = function () {
-                firebase.auth().signOut();
-                location.href = "/admin.html";
+            var db = firebase.firestore();
+
+            document.getElementById("floods").onclick = function () {
+                document.getElementById("info").innerHTML = "Data collected for: Floods";
+
+                // Set up reference to point documents in database
+                var docRef = db.collection("").doc("");
             }
-            */
+
+            document.getElementById("oilpalms").onclick = function () {
+                document.getElementById("info").innerHTML = "Data collected for: Oil Palms";
+
+                // Set up reference to point documents in database
+                var docRef = db.collection("").doc("");
+            }
+
+            document.getElementById("earthquakes").onclick = function () {
+                document.getElementById("info").innerHTML = "Data collected for: Earthquakes";
+
+                // Set up reference to point documents in database
+                var docRef = db.collection("").doc("");
+            }
+
+            document.getElementById("fire").onclick = function () {
+                document.getElementById("info").innerHTML = "Data collected for: Fire";
+
+                // Set up reference to point documents in database
+                var docRef = db.collection("").doc("");
+            }
         </script>
 
     </body>
