@@ -44,3 +44,41 @@
   
   /* Change the background color of the dropdown button when the dropdown content is shown */
   .dropdown:hover .dropbtn {background-color: #e34c10;}
+
+  .next-button {
+    background-color: #d4470f;
+    color: white;
+    padding: 12px;
+    font-size: 22px;
+    min-width: 160px;
+    border-radius: 0.3rem;
+    margin: 2rem;
+    float: right;
+    border: none;
+  }
+
+  .next-button:hover {
+    background-color: #e34c10;
+  }
+
+  .data-container .left {
+    width: 26rem; 
+    min-height: 15rem;
+    float:left; 
+    padding-left: 3%;
+    margin-left: 5rem;
+  }
+
+  .data-container .right {
+    width: 26rem; 
+    min-height: 15rem;
+    float:left; 
+    padding-left: 3%;
+  }
+
+  .data-container .image {
+    width: 26rem; 
+    height: 15rem;
+    float:left; 
+    text-align: center;
+  }
