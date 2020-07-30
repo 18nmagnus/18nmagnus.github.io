@@ -34,26 +34,51 @@
 
         <div class="data-container" id="data">
             <div class="left">
-                <h3 id="collector">Collector:</h3>
-                <h4 id="class">Class:</h4>
-                <h4 id="comment">Comment:</h4>
-                <h4 id="photo">Photo:</h4>
-                <h4 id="time">Timestamp:</h4>
+                <h3 id="collector0">Collector:</h3>
+                <h4 id="class0">Class:</h4>
+                <h4 id="comment0">Comment:</h4>
+                <h4 id="photo0">Photo:</h4>
+                <h4 id="time0">Timestamp:</h4>
             </div>
 
             <div class="right">
-                <h4 id="heading">Heading:</h4>
-                <h4 id="latitude">Latitude:</h4>
-                <h4 id="longitude">Longitude:</h4>
-                <h4 id="accuracy">Accuracy:</h4>
+                <h4 id="heading0">Heading:</h4>
+                <h4 id="latitude0">Latitude:</h4>
+                <h4 id="longitude0">Longitude:</h4>
+                <h4 id="accuracy0">Accuracy:</h4>
             </div>
 
             <div class="image">
-                <img src="./photos/noimage.png" style="background-attachment: fixed; 
+                <img style="background-attachment: fixed; 
                 background-position: center;
                 position: relative;
                 background-repeat: no-repeat;
-                height: 100%; width: 100%; object-fit: contain;">
+                height: 100%; width: 100%; object-fit: contain;" id="point_photo0">
+            </div>
+        </div>
+
+        <div class="data-container" id="data">
+            <div class="left">
+                <h3 id="collector1">Collector:</h3>
+                <h4 id="class1">Class:</h4>
+                <h4 id="comment1">Comment:</h4>
+                <h4 id="photo1">Photo:</h4>
+                <h4 id="time1">Timestamp:</h4>
+            </div>
+
+            <div class="right">
+                <h4 id="heading1">Heading:</h4>
+                <h4 id="latitude1">Latitude:</h4>
+                <h4 id="longitude1">Longitude:</h4>
+                <h4 id="accuracy1">Accuracy:</h4>
+            </div>
+
+            <div class="image">
+                <img style="background-attachment: fixed; 
+                background-position: center;
+                position: relative;
+                background-repeat: no-repeat;
+                height: 100%; width: 100%; object-fit: contain;" id="point_photo1">
             </div>
         </div>
 
@@ -68,6 +93,7 @@
         <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-analytics.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-storage.js"></script>
 
         <script>
         // Your web app's Firebase configuration
@@ -89,6 +115,8 @@
         firebase.analytics();
 
         var db = firebase.firestore();
+        var storage = firebase.storage();
+        var storageRef = storage.ref();
 
         document.getElementById("floods").onclick = function () {
             document.getElementById("info").innerHTML = "Data collected for: Floods";
@@ -96,31 +124,50 @@
         // Set up reference to point documents in database
         var first = db.collection("Floods")
                 .orderBy("timestamp", "desc")
-                .limit(1);
+                .limit(2);
+
+        var i = 0;
 
             return first.get().then(function (documentSnapshots) {
                 documentSnapshots.forEach(function (doc) {
+                    if(i > 1) {
+                        i = 0;
+                    }
                     // doc.data() is never undefined for query doc snapshots
                     console.log(doc.id, " => ", doc.data());
 
-                    document.getElementById("collector").innerHTML = "Collector: " + doc.get("collector");
-                    document.getElementById("class").innerHTML = "Class: " + doc.get("class");
-                    document.getElementById("heading").innerHTML = "Heading: " + doc.get("heading");
-                    document.getElementById("latitude").innerHTML = "Latitude: " + doc.get("latitude");
-                    document.getElementById("longitude").innerHTML = "Longitude: " + doc.get("longitude");
-                    document.getElementById("accuracy").innerHTML = "Accuracy: " + doc.get("accuracy");
+                    document.getElementById("collector" + i).innerHTML = "Collector: " + doc.get("collector");
+                    document.getElementById("class" + i).innerHTML = "Class: " + doc.get("class");
+                    document.getElementById("heading" + i).innerHTML = "Heading: " + doc.get("heading");
+                    document.getElementById("latitude" + i).innerHTML = "Latitude: " + doc.get("latitude");
+                    document.getElementById("longitude" + i).innerHTML = "Longitude: " + doc.get("longitude");
+                    document.getElementById("accuracy" + i).innerHTML = "Accuracy: " + doc.get("accuracy");
 
                     if(!(doc.get("comment") == "")) {
-                        document.getElementById("comment").innerHTML = "Comment: " + doc.get("comment");
+                        document.getElementById("comment" + i).innerHTML = "Comment: " + doc.get("comment");
                     } else {
-                        document.getElementById("comment").innerHTML = "Comment: [none]";
+                        document.getElementById("comment" + i).innerHTML = "Comment: [none]";
                     }
                     if(!(doc.get("photo") == "")) {
-                        document.getElementById("photo").innerHTML = "Photo: " + doc.get("photo");
+                        document.getElementById("photo" + i).innerHTML = "Photo: " + doc.get("photo");
+                        
+                        storageRef.child("Images/Floods/" + doc.get("photo")).getDownloadURL().then(function(url) {
+                            // 'url' is the download url for Images/Floods/photo.jpg
+                            // Insert url into image object
+                            var img = document.getElementById("point_photo" + i);
+                            img.src = url;
+                        }).catch(function(error) {
+                            alert("Photo not loaded.");
+                        });
+
                     } else {
-                        document.getElementById("photo").innerHTML = "Photo: [none]";
+                        document.getElementById("photo" + i).innerHTML = "Photo: [none]";
+                        var img = document.getElementById("point_photo" + i);
+                        img.src = "./photos/noimage.png";
                     }
-                    document.getElementById("time").innerHTML = "Timestamp: " + doc.get("timestamp");
+                    document.getElementById("time" + i).innerHTML = "Timestamp: " + doc.get("timestamp");
+
+                    i++;
                 });
 
                 // Get the last visible document
@@ -132,7 +179,7 @@
                 var next = db.collection("Floods")
                     .orderBy("timestamp", "desc")
                     .startAfter(lastVisible)
-                    .limit(1);
+                    .limit(2);
             });
         }
 
