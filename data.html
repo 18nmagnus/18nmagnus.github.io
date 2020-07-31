@@ -115,6 +115,7 @@
         firebase.analytics();
 
         var db = firebase.firestore();
+
         var storage = firebase.storage();
         var storageRef = storage.ref();
 
@@ -152,12 +153,14 @@
                         document.getElementById("photo" + i).innerHTML = "Photo: " + doc.get("photo");
                         
                         storageRef.child("Images/Floods/" + doc.get("photo")).getDownloadURL().then(function(url) {
-                            // 'url' is the download url for Images/Floods/photo.jpg
-                            // Insert url into image object
-                            var img = document.getElementById("point_photo" + i);
-                            img.src = url;
+                             // 'url' is the download url for Images/Floods/photo.jpg
+                             console.log(url);
+
+                             // Insert url into image object
+                            var pointImage = document.getElementById("point_photo" + i);
+                            pointImage.src = url;
                         }).catch(function(error) {
-                            alert("Photo not loaded.");
+                            alert("Error loading photos from database." + "\n" + error);
                         });
 
                     } else {
