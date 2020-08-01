@@ -9,15 +9,10 @@
     </head>
 
     <body>
-        
-
-        <script>
-            
-        </script>
 
         <header class="page-header">
             <h1 class="project-name">Collected Data</h1>
-            <h2 class="project-tagline">A visual library of point data collected by users.</h2>
+            <h2 class="project-tagline" id="auth-tagline">A visual library of point data collected by users. Signed in as: [none]</h2>
             <a href="./index.html" class="btn">Return to Home</a>
            <div class="dropdown">
             <button class="dropbtn">Select a Project:</button>
@@ -32,7 +27,30 @@
         
         <h2 id="info" class="main-heading" style="text-align: center;">Select a project above to see collected data.</h2>
 
-        <div class="data-container" id="data">
+        <div class="login-container" id="login-container">
+            <div class="login-inner">
+                <div class="login-content">
+                    <h2 style="color: white; font-size: 25px;" id="login-title">Log in to Continue:</h2>
+                    <label style="color: white; font-size: 25px; padding: 0.3rem;">
+                        Email:
+                        <input style="background-color: white; color: #d4470f; max-width: 15rem;" type="email" name="email" id="email" required>
+                    </label>
+                    <br />
+                    <br />
+                    <label style="color: white; font-size: 25px; padding: 0.3rem;"> 
+                        Password:
+                        <input style="background-color: white; color: #d4470f; max-width: 12rem;" type="password" name="password" id="password" required></input>
+                    </label>
+                    <br />
+        
+                    <!-- your other form fields go here -->
+        
+                    <button class="login-btn" type="submit" id="login-btn">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-container hidden" id="data0">
             <div class="left">
                 <h3 id="collector0">Collector:</h3>
                 <h4 id="class0">Class:</h4>
@@ -57,7 +75,7 @@
             </div>
         </div>
 
-        <div class="data-container" id="data">
+        <div class="data-container hidden" id="data1">
             <div class="left">
                 <h3 id="collector1">Collector:</h3>
                 <h4 id="class1">Class:</h4>
@@ -83,7 +101,7 @@
         </div>
 
         <br />
-        <button class="next-button" id="next-button">Next</button>
+        <button class="next-button hidden" id="next-button">Next</button>
 
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
@@ -114,28 +132,110 @@
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
 
+        function initApp() {
+
+            // Listening for auth state changes.
+            // [START authstatelistener]
+            firebase.auth().onAuthStateChanged(function(user) {
+                if(user) {
+                    document.getElementById("login-container").style.display = "none";
+                    document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: " + firebase.auth().currentUser.email;
+                } else {
+                    document.getElementById("login-container").style.display = "table";
+                }
+            });
+
+        }
+
+        window.onload = function() {
+            initApp();
+        };
+
+        document.getElementById("login-btn").onclick = function () {
+            console.log("Submit clicked");
+
+            if (firebase.auth().currentUser) {
+                // [START signout]
+                firebase.auth().signOut();
+                // [END signout]
+            }
+
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            if (email.length == 0) {
+                alert('Please enter an email address.');
+                return;
+            }
+            if (password.length == 0) {
+                alert('Please enter a password.');
+                return;
+            }
+
+            // Sign in with email and pass.
+            // [START authwithemail]
+            firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // [START_EXCLUDE]
+                if (errorCode === 'auth/wrong-password') {
+                    alert('Wrong password.');
+                } else {
+                    alert(errorMessage);
+                }
+                console.log(error);
+                // [END_EXCLUDE]
+            });
+            // [END authwithemail]
+            console.log("Logging in done");
+        }
+
         var db = firebase.firestore();
 
         var storage = firebase.storage();
         var storageRef = storage.ref();
+        var next = null;
 
         document.getElementById("floods").onclick = function () {
             document.getElementById("info").innerHTML = "Data collected for: Floods";
+            pullData("Floods");
+        }
 
-        // Set up reference to point documents in database
-        var first = db.collection("Floods")
-                .orderBy("timestamp", "desc")
-                .limit(2);
+        document.getElementById("oilpalms").onclick = function () {
+            document.getElementById("info").innerHTML = "Data collected for: Oil Palms";
+            pullData("Oil Palms");
+        }
 
-        var i = 0;
+        document.getElementById("earthquakes").onclick = function () {
+            document.getElementById("info").innerHTML = "Data collected for: Earthquakes";
+            pullData("Earthquakes");
+        }
 
-            return first.get().then(function (documentSnapshots) {
+        document.getElementById("fire").onclick = function () {
+            document.getElementById("info").innerHTML = "Data collected for: Fire";
+            pullData("Fire");
+        }
+
+        document.getElementById("next-button").onclick = function () {
+            var projectType = document.getElementById("info").textContent.substring(20);
+
+            var i = 0;
+
+            return next.get().then(function (documentSnapshots) {
                 documentSnapshots.forEach(function (doc) {
-                    if(i > 1) {
+                    if(i == 2) {
                         i = 0;
                     }
+                    if(i == 0) {
+                        document.getElementById("data0").style.display = "none";
+                        document.getElementById("data1").style.display = "none";
+                        document.getElementById("next-button").style.display = "none";
+                    }
+                    
                     // doc.data() is never undefined for query doc snapshots
                     console.log(doc.id, " => ", doc.data());
+                    document.getElementById("data" + i).style.display = "block";
 
                     document.getElementById("collector" + i).innerHTML = "Collector: " + doc.get("collector");
                     document.getElementById("class" + i).innerHTML = "Class: " + doc.get("class");
@@ -151,16 +251,106 @@
                     }
                     if(!(doc.get("photo") == "")) {
                         document.getElementById("photo" + i).innerHTML = "Photo: " + doc.get("photo");
+                        var photoIndex = i;
                         
-                        storageRef.child("Images/Floods/" + doc.get("photo")).getDownloadURL().then(function(url) {
+                        storageRef.child("Images/" + projectType + "/" + doc.get("photo")).getDownloadURL().then(function(url) {
                              // 'url' is the download url for Images/Floods/photo.jpg
                              console.log(url);
+                             // For some reason, this is getting hit after we load both documents onto console.
+                             // Causing issue with i being equal to 2, which is out of range.
+                             // Have to save i at specific index before hitting this method.
 
                              // Insert url into image object
-                            var pointImage = document.getElementById("point_photo" + i);
+                            console.log(photoIndex);
+                            var pointImage = document.getElementById("point_photo" + photoIndex);
                             pointImage.src = url;
                         }).catch(function(error) {
-                            alert("Error loading photos from database." + "\n" + error);
+                            // testing: alert("Error loading photos from database." + "\n" + error + "\n" + "point_photo" + i);
+                            alert("Error loading photos from database.");
+                        });
+
+                    } else {
+                        document.getElementById("photo" + i).innerHTML = "Photo: [none]";
+                        var img = document.getElementById("point_photo" + i);
+                        img.src = "./photos/noimage.png";
+                        document.getElementById("next-button").style.display = "block";
+                    }
+                    document.getElementById("time" + i).innerHTML = "Timestamp: " + doc.get("timestamp");
+
+                    i++;
+                    console.log(i);
+                });
+
+                if(i == 0) {
+                    alert("No more point data available. Choose another project.");
+                    const button = document.getElementById("next-button");
+                    return;
+                }
+
+                // Get the last visible document
+                var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+                console.log("last", lastVisible);
+
+                // Construct a new query starting at this document,
+                // get the next 2 points.
+                next = db.collection(projectType)
+                .orderBy("timestamp", "desc")
+                .startAfter(lastVisible)
+                .limit(2);      
+                
+            });
+        }
+
+        function pullData(projectType) {
+            document.getElementById("data0").style.display = "none";
+            document.getElementById("data1").style.display = "none";
+            document.getElementById("next-button").style.display = "none";
+
+            // Set up reference to point documents in database
+            var first = db.collection(projectType)
+                .orderBy("timestamp", "desc")
+                .limit(2);
+
+            var i = 0;
+
+            return first.get().then(function (documentSnapshots) {
+                documentSnapshots.forEach(function (doc) {
+                    if(i == 2) {
+                        i = 0;
+                    }
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log(doc.id, " => ", doc.data());
+                    document.getElementById("data" + i).style.display = "block";
+
+                    document.getElementById("collector" + i).innerHTML = "Collector: " + doc.get("collector");
+                    document.getElementById("class" + i).innerHTML = "Class: " + doc.get("class");
+                    document.getElementById("heading" + i).innerHTML = "Heading: " + doc.get("heading");
+                    document.getElementById("latitude" + i).innerHTML = "Latitude: " + doc.get("latitude");
+                    document.getElementById("longitude" + i).innerHTML = "Longitude: " + doc.get("longitude");
+                    document.getElementById("accuracy" + i).innerHTML = "Accuracy: " + doc.get("accuracy");
+
+                    if(!(doc.get("comment") == "")) {
+                        document.getElementById("comment" + i).innerHTML = "Comment: " + doc.get("comment");
+                    } else {
+                        document.getElementById("comment" + i).innerHTML = "Comment: [none]";
+                    }
+                    if(!(doc.get("photo") == "")) {
+                        document.getElementById("photo" + i).innerHTML = "Photo: " + doc.get("photo");
+                        var photoIndex = i;
+                        
+                        storageRef.child("Images/" + projectType + "/" + doc.get("photo")).getDownloadURL().then(function(url) {
+                             // 'url' is the download url for Images/Floods/photo.jpg
+                             console.log(url);
+                             // For some reason, this is getting hit after we load both documents onto console.
+                             // Causing issue with i being equal to 2, which is out of range.
+                             // Have to save i at specific index before hitting this method.
+
+                             // Insert url into image object
+                            console.log(photoIndex);
+                            var pointImage = document.getElementById("point_photo" + photoIndex);
+                            pointImage.src = url;
+                        }).catch(function(error) {
+                            alert("Error loading photos from database." + "\n" + error + "\n" + "point_photo" + i);
                         });
 
                     } else {
@@ -171,156 +361,28 @@
                     document.getElementById("time" + i).innerHTML = "Timestamp: " + doc.get("timestamp");
 
                     i++;
+                    console.log(i);
                 });
+
+                if(i == 2) {
+                    document.getElementById("next-button").style.display = "block";
+                }
 
                 // Get the last visible document
                 var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
                 console.log("last", lastVisible);
 
-                // Construct a new query starting at this document,
-                // get the next 25 cities.
-                var next = db.collection("Floods")
+                if(typeof lastVisible == "undefined") {
+                    alert("No point data found. Choose another project.");
+                } else {
+                    // Construct a new query starting at this document,
+                    // get the next 2 points.
+                    next = db.collection(projectType)
                     .orderBy("timestamp", "desc")
                     .startAfter(lastVisible)
                     .limit(2);
-            });
-        }
-
-        document.getElementById("oilpalms").onclick = function () {
-            document.getElementById("info").innerHTML = "Data collected for: Oil Palms";
-
-            // Set up reference to point documents in database
-        var first = db.collection("Oil Palms")
-                .orderBy("timestamp", "desc")
-                .limit(1);
-
-            return first.get().then(function (documentSnapshots) {
-                documentSnapshots.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
-
-                    document.getElementById("collector").innerHTML = "Collector: " + doc.get("collector");
-                    document.getElementById("class").innerHTML = "Class: " + doc.get("class");
-                    document.getElementById("heading").innerHTML = "Heading: " + doc.get("heading");
-                    document.getElementById("latitude").innerHTML = "Latitude: " + doc.get("latitude");
-                    document.getElementById("longitude").innerHTML = "Longitude: " + doc.get("longitude");
-                    document.getElementById("accuracy").innerHTML = "Accuracy: " + doc.get("accuracy");
-
-                    if(!(doc.get("comment") == "")) {
-                        document.getElementById("comment").innerHTML = "Comment: " + doc.get("comment");
-                    } else {
-                        document.getElementById("comment").innerHTML = "Comment: [none]";
-                    }
-                    if(!(doc.get("photo") == "")) {
-                        document.getElementById("photo").innerHTML = "Photo: " + doc.get("photo");
-                    } else {
-                        document.getElementById("photo").innerHTML = "Photo: [none]";
-                    }
-                    document.getElementById("time").innerHTML = "Timestamp: " + doc.get("timestamp");
-                });
-
-                // Get the last visible document
-                var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-                console.log("last", lastVisible);
-
-                // Construct a new query starting at this document,
-                // get the next 25 cities.
-                var next = db.collection("Oil Palms")
-                    .orderBy("timestamp", "desc")
-                    .startAfter(lastVisible)
-                    .limit(1);
-            });
-        }
-
-        document.getElementById("earthquakes").onclick = function () {
-            document.getElementById("info").innerHTML = "Data collected for: Earthquakes";
-
-            // Set up reference to point documents in database
-        var first = db.collection("Earthquakes")
-                .orderBy("timestamp", "desc")
-                .limit(1);
-
-            return first.get().then(function (documentSnapshots) {
-                documentSnapshots.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
-
-                    document.getElementById("collector").innerHTML = "Collector: " + doc.get("collector");
-                    document.getElementById("class").innerHTML = "Class: " + doc.get("class");
-                    document.getElementById("heading").innerHTML = "Heading: " + doc.get("heading");
-                    document.getElementById("latitude").innerHTML = "Latitude: " + doc.get("latitude");
-                    document.getElementById("longitude").innerHTML = "Longitude: " + doc.get("longitude");
-                    document.getElementById("accuracy").innerHTML = "Accuracy: " + doc.get("accuracy");
-
-                    if(!(doc.get("comment") == "")) {
-                        document.getElementById("comment").innerHTML = "Comment: " + doc.get("comment");
-                    } else {
-                        document.getElementById("comment").innerHTML = "Comment: [none]";
-                    }
-                    if(!(doc.get("photo") == "")) {
-                        document.getElementById("photo").innerHTML = "Photo: " + doc.get("photo");
-                    } else {
-                        document.getElementById("photo").innerHTML = "Photo: [none]";
-                    }
-                    document.getElementById("time").innerHTML = "Timestamp: " + doc.get("timestamp");
-                });
-
-                // Get the last visible document
-                var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-                console.log("last", lastVisible);
-
-                // Construct a new query starting at this document,
-                // get the next 25 cities.
-                var next = db.collection("Earthquakes")
-                    .orderBy("timestamp", "desc")
-                    .startAfter(lastVisible)
-                    .limit(1);
-            });
-        }
-
-        document.getElementById("fire").onclick = function () {
-            document.getElementById("info").innerHTML = "Data collected for: Fire";
-
-            // Set up reference to point documents in database
-        var first = db.collection("Fire")
-                .orderBy("timestamp", "desc")
-                .limit(1);
-
-            return first.get().then(function (documentSnapshots) {
-                documentSnapshots.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    console.log(doc.id, " => ", doc.data());
-
-                    document.getElementById("collector").innerHTML = "Collector: " + doc.get("collector");
-                    document.getElementById("class").innerHTML = "Class: " + doc.get("class");
-                    document.getElementById("heading").innerHTML = "Heading: " + doc.get("heading");
-                    document.getElementById("latitude").innerHTML = "Latitude: " + doc.get("latitude");
-                    document.getElementById("longitude").innerHTML = "Longitude: " + doc.get("longitude");
-                    document.getElementById("accuracy").innerHTML = "Accuracy: " + doc.get("accuracy");
-
-                    if(!(doc.get("comment") == "")) {
-                        document.getElementById("comment").innerHTML = "Comment: " + doc.get("comment");
-                    } else {
-                        document.getElementById("comment").innerHTML = "Comment: [none]";
-                    }
-                    if(!(doc.get("photo") == "")) {
-                        document.getElementById("photo").innerHTML = "Photo: " + doc.get("photo");
-                    } else {
-                        document.getElementById("photo").innerHTML = "Photo: [none]";
-                    }
-                    document.getElementById("time").innerHTML = "Timestamp: " + doc.get("timestamp");
-                });
-
-                // Get the last visible document
-                var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-                console.log("last", lastVisible);
-
-                // Construct a new query starting at this document,
-                // get the next 25 cities.
-                var next = db.collection("Fire")
-                    .orderBy("timestamp", "desc")
-                    .startAfter(lastVisible)
-                    .limit(1);
+                }       
+                
             });
         }
         </script>
