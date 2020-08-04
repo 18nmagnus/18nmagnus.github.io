@@ -15,35 +15,98 @@
             <a href="./index.html" class="btn">Return to Home Page</a>
             <br />
 
-            <form
-            action="https://formspree.io/xyynnypp"
-            method="POST"
-            >
+        
             <label class="form-heading">
                 Name:
-                <input class="input" type="text" name="name" required>
+                <input class="input" type="text" name="name" id="name" maxlength="50" style="width: 20.5rem;" required>
             </label>
             <br />
             <label class="form-heading">
                 Email:
-                <input class="input" type="email" name="_replyto" required>
+                <input class="input" type="email" name="email" id="email" maxlength="50" style="width: 20.5rem;" required>
+            </label>
+            <br />
+            <label class="form-heading">
+                Passcode:
+                <input class="input" type="password" name="password" id="password" maxlength="50" style="width: 17rem;" required>
             </label>
             <br />
             <br />
             <label class="form-heading"> 
                 Background/Field Experience:
-                <br />
-                <textarea class="input" name="experience" rows="4" cols="25" required></textarea>
+                <p class="sub-heading">Please indicate if there are any of our specific projects that interest you.</p>
+                <p class="sub-heading">(Max length of 1000 characters)</p>
+                <textarea class="input" name="experience" id="experience" rows="4" cols="25" maxlength="1000" required></textarea>
             </label>
             <br />
-
-            <!-- your other form fields go here -->
-
-            <button class="form-btn" type="submit">Submit</button>
-        </form>
-        </header>
-
+            <button class="form-btn" id="form-btn" type="submit">Submit</button>
         
+        </header>   
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-firestore.js"></script>
+
+        <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyB-NS4PfFihzVFhZRNXzD0obUZuaBIirso",
+            authDomain: "scihound-776c7.firebaseapp.com",
+            databaseURL: "https://scihound-776c7.firebaseio.com",
+            projectId: "scihound-776c7",
+            storageBucket: "scihound-776c7.appspot.com",
+            messagingSenderId: "667225946605",
+            appId: "1:667225946605:web:bde09af987c1fb64044fe4",
+            measurementId: "G-MQSTQVRLKP"
+        };
+        // Initialize Firebase
+        //const firebase = require("firebase");
+        // Required for side-effects
+        //require("firebase/firestore");
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+        var db = firebase.firestore();
+        
+        document.getElementById("form-btn").onclick = function () {
+            if(document.getElementById("name").value == "") {
+                return;
+            }
+            if(document.getElementById("email").value == "") {
+                return;
+            }
+            if(document.getElementById("experience").value == "") {
+                return;
+            }
+            if(document.getElementById("password").value == "") {
+                return;
+            }
+
+            // add a new document in account requests
+            db.collection("requests").doc(document.getElementById("email").value).set({
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                exp: document.getElementById("experience").value,
+                code: document.getElementById("password").value
+            })
+            .then(function() {
+                alert("Form successfully submitted!");
+                document.getElementById("name").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("experience").value = "";
+                document.getElementById("password").value = "";
+            })
+            .catch(function(error) {
+                alert("Error submitting form. Check that the passcode is correct.");
+                console.error("Error submitting form: ", error);
+            });
+        }
+
+        </script>
 
 
     </body>

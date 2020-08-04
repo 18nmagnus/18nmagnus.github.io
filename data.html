@@ -14,6 +14,7 @@
             <h1 class="project-name">Collected Data</h1>
             <h2 class="project-tagline" id="auth-tagline">A visual library of point data collected by users. Signed in as: [none]</h2>
             <a href="./index.html" class="btn">Return to Home</a>
+            <button class="btn" id="signout-btn">Sign Out</button>
            <div class="dropdown">
             <button class="dropbtn">Select a Project:</button>
             <div class="dropdown-content">
@@ -44,7 +45,6 @@
                     <br />
         
                     <!-- your other form fields go here -->
-        
                     <button class="login-btn" type="submit" id="login-btn">Submit</button>
                 </div>
             </div>
@@ -142,6 +142,7 @@
                     document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: " + firebase.auth().currentUser.email;
                 } else {
                     document.getElementById("login-container").style.display = "table";
+                    document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: [none]";
                 }
             });
 
@@ -188,7 +189,16 @@
                 // [END_EXCLUDE]
             });
             // [END authwithemail]
-            console.log("Logging in done");
+        }
+
+        document.getElementById("signout-btn").onclick = function () {
+            if (firebase.auth().currentUser) {
+                // [START signout]
+                firebase.auth().signOut();
+                // [END signout]
+            }
+            // Do we want this??
+            document.location.href = "./index.html";
         }
 
         var db = firebase.firestore();

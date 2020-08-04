@@ -29,6 +29,12 @@
     font-weight: bold;
 }
 
+.form-heading .sub-heading {
+    color: white;
+    font-size: 15px;
+    margin: 0px;
+}
+
 .fill-screen {
     width: 100vw;
     height: 100vh;
