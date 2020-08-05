@@ -59,14 +59,14 @@
                 <h4 id="time0">Timestamp:</h4>
             </div>
 
-            <div class="right">
+            <div class="center">
                 <h4 id="heading0">Heading:</h4>
                 <h4 id="latitude0">Latitude:</h4>
                 <h4 id="longitude0">Longitude:</h4>
                 <h4 id="accuracy0">Accuracy:</h4>
             </div>
 
-            <div class="image">
+            <div class="right">
                 <img style="background-attachment: fixed; 
                 background-position: center;
                 position: relative;
@@ -84,14 +84,14 @@
                 <h4 id="time1">Timestamp:</h4>
             </div>
 
-            <div class="right">
+            <div class="center">
                 <h4 id="heading1">Heading:</h4>
                 <h4 id="latitude1">Latitude:</h4>
                 <h4 id="longitude1">Longitude:</h4>
                 <h4 id="accuracy1">Accuracy:</h4>
             </div>
 
-            <div class="image">
+            <div class="right">
                 <img style="background-attachment: fixed; 
                 background-position: center;
                 position: relative;
@@ -197,8 +197,6 @@
                 firebase.auth().signOut();
                 // [END signout]
             }
-            // Do we want this??
-            document.location.href = "./index.html";
         }
 
         var db = firebase.firestore();
@@ -371,7 +369,6 @@
                     document.getElementById("time" + i).innerHTML = "Timestamp: " + doc.get("timestamp");
 
                     i++;
-                    console.log(i);
                 });
 
                 if(i == 2) {

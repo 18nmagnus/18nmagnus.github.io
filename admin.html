@@ -5,10 +5,59 @@
         <title>SciHound - Login</title>
         <link rel="stylesheet" type="text/css" href="./stylesheets/style.css" media="screen">
         <link rel="stylesheet" type="text/css" href="./stylesheets/normalize.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="./stylesheets/form.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="./stylesheets/admin.css" media="screen">
     </head>
 
     <body>
+        <header class="page-header fill-screen">
+            <h1 class="project-name">View Requests</h1>
+            <h2 class="project-tagline" id="auth-tagline">View current pending account requests. Signed in as: [none]</h2>
+            <a href="./user.html" class="btn">Return to Request Form</a>
+        </header>
+
+        <div class="login-container" id="login-container">
+            <div class="login-inner">
+                <div class="login-content">
+                    <h2 style="color: white; font-size: 25px;" id="login-title">Log in to Continue:</h2>
+                    <label style="color: white; font-size: 25px; padding: 0.3rem;">
+                        Email:
+                        <input style="background-color: white; color: #d4470f; max-width: 15rem;" type="email" name="email" id="email" required>
+                    </label>
+                    <br />
+                    <br />
+                    <label style="color: white; font-size: 25px; padding: 0.3rem;"> 
+                        Password:
+                        <input style="background-color: white; color: #d4470f; max-width: 12rem;" type="password" name="password" id="password" required></input>
+                    </label>
+                    <br />
+        
+                    <!-- your other form fields go here -->
+                    <button class="login-btn" type="submit" id="login-btn">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-container hidden" id="data0">
+            <div class="left">
+                <br />
+                <h3 id="name0">Name:</h3>
+                <br />
+                <h4 id="email0">Email:</h4>
+            </div>
+
+            <div class="center">
+                <h4 id="experience0">Experience/Background:</h4>
+            </div>
+
+            <div class="right">
+                <button class="approve-btn" id="approve-btn">Approve</button>
+                <button class="reject-btn" id="reject-btn">Reject</button>
+            </div>
+        </div>
+
+        <br />
+        <button class="next-button hidden" id="next-button">Next</button>
+
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-app.js"></script>
 
@@ -16,6 +65,7 @@
         https://firebase.google.com/docs/web/setup#available-libraries -->
         <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-analytics.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-firestore.js"></script>
 
         <script>
             // Your web app's Firebase configuration
@@ -32,29 +82,6 @@
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             firebase.analytics();
-        </script>
-        
-
-        <header class="page-header fill-screen">
-            <h1 class="project-name">User Login</h1>
-            <h2 class="project-tagline">Log in to see collected point data.</h2>
-            <a href="./index.html" class="btn">Return to Home Page</a>
-            <br />
-
-            <label class="form-heading">
-                Email:
-                <input class="input" type="email" id="email" name="email" required>
-            </label>
-            <br />
-            <label class="form-heading"> 
-                Password:
-                <input class="input" type="password" id="password" name="password" required>
-            </label>
-            <br />
-            <button class="form-btn" type="submit" id="submitButton">Submit</button>
-        </header>
-
-        <script>
 
             /**
             * initApp handles setting up UI event listeners and registering Firebase auth listeners:
@@ -66,8 +93,21 @@
                 // [START authstatelistener]
                 firebase.auth().onAuthStateChanged(function (user) {
                     if (user) {
-                        // User is signed in
-                        location.href = "./data.html";
+                        db.collection("admin").doc(firebase.auth().currentUser.uid).get().then(function (doc) {
+                            if (doc.exists) {
+                                console.log("Document data:", doc.data());
+                                document.getElementById("login-container").style.display = "none";
+                                document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: " + firebase.auth().currentUser.email;
+                                pullData();
+                            } else { 
+                                alert(firebase.auth().currentUser.email + " does not have proper priviledges to view account requests.");
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
+                        });
+                    } else {
+                        document.getElementById("login-container").style.display = "table";
+                        document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: [none]";
                     }
                 });
                 // [END authstatelistener]
@@ -77,14 +117,22 @@
                 initApp();
             };
 
-            document.getElementById("submitButton").onclick = function () {
+            // Get instance of firestore database
+            // Can be used for mulitple methods and onclick
+            var db = firebase.firestore();
+
+            document.getElementById("login-btn").onclick = function () {
+                console.log("Submit clicked");
+
                 if (firebase.auth().currentUser) {
-                        // [START signout]
-                        firebase.auth().signOut();
-                        // [END signout]
+                    // [START signout]
+                    firebase.auth().signOut();
+                    // [END signout]
                 }
+
                 var email = document.getElementById('email').value;
                 var password = document.getElementById('password').value;
+
                 if (email.length == 0) {
                     alert('Please enter an email address.');
                     return;
@@ -110,7 +158,102 @@
                     // [END_EXCLUDE]
                 });
                 // [END authwithemail]
-                };
+
+            }
+
+            function pullData() {
+                document.getElementById("data0").style.display = "none";
+                document.getElementById("next-button").style.display = "none";
+
+                var containers = 1;
+                // Set up reference to point documents in database
+                var first = db.collection("requests")
+                    .limit(containers);
+
+                var i = 0;
+
+                return first.get().then(function (documentSnapshots) {
+                    documentSnapshots.forEach(function (doc) {
+                        if (i == containers) {
+                            i = 0;
+                        }
+                        // doc.data() is never undefined for query doc snapshots
+                        console.log(doc.id, " => ", doc.data());
+                        document.getElementById("data" + i).style.display = "block";
+
+                        document.getElementById("name" + i).innerHTML = "Name: " + doc.get("name");
+                        document.getElementById("email" + i).innerHTML = "Email: " + doc.get("email");
+                        document.getElementById("experience" + i).innerHTML = "Experience/Background: " + doc.get("exp");
+
+                        i++;
+                    });
+
+                    if (i == containers) {
+                        document.getElementById("next-button").style.display = "block";
+                    }
+
+                    // Get the last visible document
+                    var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+                    console.log("last", lastVisible);
+
+                    if (typeof lastVisible == "undefined") {
+                        alert("No point data found. Choose another project.");
+                    } else {
+                        // Construct a new query starting at this document,
+                        // get the next 2 points.
+                        next = db.collection("requests")
+                            .startAfter(lastVisible)
+                            .limit(containers);
+                    }
+
+                });
+            }
+
+            document.getElementById("next-button").onclick = function () {
+            var containers = 1;
+            var i = 0;
+
+            return next.get().then(function (documentSnapshots) {
+                documentSnapshots.forEach(function (doc) {
+                    if(i == containers) {
+                        i = 0;
+                    }
+                    if(i == 0) {
+                        document.getElementById("data0").style.display = "none";
+                        document.getElementById("next-button").style.display = "none";
+                    }
+                    
+                    // doc.data() is never undefined for query doc snapshots
+                    console.log(doc.id, " => ", doc.data());
+                    document.getElementById("data" + i).style.display = "block";
+
+                    document.getElementById("name" + i).innerHTML = "Name: " + doc.get("name");
+                    document.getElementById("email" + i).innerHTML = "Email: " + doc.get("email");
+                    document.getElementById("experience" + i).innerHTML = "Experience/Background: " + doc.get("exp");
+
+                    i++;
+                });
+
+                if(i == 0) {
+                    alert("No more point data available. Choose another project.");
+                    const button = document.getElementById("next-button");
+                    return;
+                }
+
+                // Get the last visible document
+                var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+                console.log("last", lastVisible);
+
+                // Construct a new query starting at this document,
+                // get the next 2 points.
+                next = db.collection(projectType)
+                .orderBy("timestamp", "desc")
+                .startAfter(lastVisible)
+                .limit(2);      
+                
+            });
+        }
+
         </script>
 
     </body>
