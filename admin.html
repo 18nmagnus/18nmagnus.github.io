@@ -350,9 +350,21 @@
                     console.error("Error removing document: ", error);
                 });
 
-                secondaryApp.auth().signOut();
-                console.log("User successfully signed out.");
-                secondaryApp.delete();
+                secondaryApp.auth().signOut().then(function() {
+                    console.log("User successfully signed out.");
+                });
+
+                // Send password reset email from Firebase template
+                var newEmail = secondaryApp.auth().currentUser.email;
+                secondaryApp.auth().sendPasswordResetEmail(newEmail).then(function() {
+                    console.log("Password reset email sent.");
+                    secondaryApp.delete();
+                }).catch(function(error) {
+                    console.log("Email failed to send: ", error);
+                });
+
+                
+                
 
             }).catch(function(error) {
                 console.log(error);
