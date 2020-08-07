@@ -2,7 +2,7 @@
 <html lang="en-us">
     <head>
         <meta charset="UTF-8">
-        <title>SciHound - Login</title>
+        <title>SciHound - Requests</title>
         <link rel="stylesheet" type="text/css" href="./stylesheets/style.css" media="screen">
         <link rel="stylesheet" type="text/css" href="./stylesheets/normalize.css" media="screen">
         <link rel="stylesheet" type="text/css" href="./stylesheets/admin.css" media="screen">
@@ -13,6 +13,7 @@
             <h1 class="project-name">View Requests</h1>
             <h2 class="project-tagline" id="auth-tagline">View current pending account requests. Signed in as: [none]</h2>
             <a href="./user.html" class="btn">Return to Request Form</a>
+            <button class="btn" id="signout-btn">Sign Out</button>
         </header>
 
         <div class="login-container" id="login-container">
@@ -32,28 +33,50 @@
                     <br />
         
                     <!-- your other form fields go here -->
-                    <button class="login-btn" type="submit" id="login-btn">Submit</button>
+                    <button class="login-btn" type="submit" id="login-btn" onclick="submitLogin()">Submit</button>
                 </div>
             </div>
         </div>
 
+        <!--//******************************
+        //******************************
+        // Begin Data Container
+        //******************************
+        //******************************-->
+
         <div class="data-container hidden" id="data0">
-            <div class="left">
-                <br />
-                <h3 id="name0">Name:</h3>
-                <br />
-                <h4 id="email0">Email:</h4>
-            </div>
+                <h3 id="name0" class="request-heading">Name:</h3>
+                <h4 id="email0" class="request-heading">Email:</h4>
+                
+                <h4 class="request-par">Experience/Background:</h4>
+                <p id="experience0" class="request-par"></p>
 
-            <div class="center">
-                <h4 id="experience0">Experience/Background:</h4>
-            </div>
-
-            <div class="right">
-                <button class="approve-btn" id="approve-btn">Approve</button>
-                <button class="reject-btn" id="reject-btn">Reject</button>
-            </div>
+                <!--//******************************
+                //******************************
+                // Begin Dropdown Containers
+                //******************************
+                //******************************-->
+                
+                <div class="dropdown">
+                    <button class="approve-btn" id="approve-btn">Approve</button>
+                    <div id="appDropdown" class="dropdown-content">
+                        <button id="confirm-app">Confirm Approval</button>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="reject-btn" id="reject-btn">Reject</button>
+                    <div id="rejDropdown" class="dropdown-content">
+                        <button id="confirm-rej">Confirm Rejection</button>
+                    </div>
+                </div>
         </div>
+
+        <!--//******************************
+        //******************************
+        // Begin Firebase Initialization
+        //******************************
+        //******************************-->
 
         <br />
         <button class="next-button hidden" id="next-button">Next</button>
@@ -81,6 +104,7 @@
             };
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
+            var secondaryApp = firebase.initializeApp(firebaseConfig, "Secondary");
             firebase.analytics();
 
             /**
@@ -97,9 +121,9 @@
                             if (doc.exists) {
                                 console.log("Document data:", doc.data());
                                 document.getElementById("login-container").style.display = "none";
-                                document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: " + firebase.auth().currentUser.email;
+                                document.getElementById("auth-tagline").innerHTML = "View current pending account requests. Signed in as: " + firebase.auth().currentUser.email;
                                 pullData();
-                            } else { 
+                            } else {
                                 alert(firebase.auth().currentUser.email + " does not have proper priviledges to view account requests.");
                             }
                         }).catch(function (error) {
@@ -107,7 +131,7 @@
                         });
                     } else {
                         document.getElementById("login-container").style.display = "table";
-                        document.getElementById("auth-tagline").innerHTML = "A visual library of point data collected by users. Signed in as: [none]";
+                        document.getElementById("auth-tagline").innerHTML = "View current pending account requests. Signed in as: [none]";
                     }
                 });
                 // [END authstatelistener]
@@ -117,11 +141,17 @@
                 initApp();
             };
 
+            //******************************
+            //******************************
+            // Begin Page Functions
+            //******************************
+            //******************************
+
             // Get instance of firestore database
             // Can be used for mulitple methods and onclick
             var db = firebase.firestore();
 
-            document.getElementById("login-btn").onclick = function () {
+            function submitLogin() {
                 console.log("Submit clicked");
 
                 if (firebase.auth().currentUser) {
@@ -130,21 +160,21 @@
                     // [END signout]
                 }
 
-                var email = document.getElementById('email').value;
-                var password = document.getElementById('password').value;
+                submitLogin.userEmail = document.getElementById('email').value;
+                submitLogin.userPass = document.getElementById('password').value;
 
-                if (email.length == 0) {
+                if (submitLogin.userEmail.length == 0) {
                     alert('Please enter an email address.');
                     return;
                 }
-                if (password.length == 0) {
+                if (submitLogin.userPass.length == 0) {
                     alert('Please enter a password.');
                     return;
                 }
 
                 // Sign in with email and pass.
                 // [START authwithemail]
-                firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
+                firebase.auth().signInWithEmailAndPassword(submitLogin.userEmail, submitLogin.userPass).catch(function (error) {
                     // Handle Errors here.
                     var errorCode = error.code;
                     var errorMessage = error.message;
@@ -160,6 +190,8 @@
                 // [END authwithemail]
 
             }
+
+            var currentDoc = null;
 
             function pullData() {
                 document.getElementById("data0").style.display = "none";
@@ -179,11 +211,13 @@
                         }
                         // doc.data() is never undefined for query doc snapshots
                         console.log(doc.id, " => ", doc.data());
+                        // For this to work, we need to keep containers at 1. !!!!!
+                        currentDoc = doc;
                         document.getElementById("data" + i).style.display = "block";
 
                         document.getElementById("name" + i).innerHTML = "Name: " + doc.get("name");
                         document.getElementById("email" + i).innerHTML = "Email: " + doc.get("email");
-                        document.getElementById("experience" + i).innerHTML = "Experience/Background: " + doc.get("exp");
+                        document.getElementById("experience" + i).innerHTML = doc.get("exp");
 
                         i++;
                     });
@@ -197,7 +231,7 @@
                     console.log("last", lastVisible);
 
                     if (typeof lastVisible == "undefined") {
-                        alert("No point data found. Choose another project.");
+                        alert("No account requests found.");
                     } else {
                         // Construct a new query starting at this document,
                         // get the next 2 points.
@@ -225,17 +259,21 @@
                     
                     // doc.data() is never undefined for query doc snapshots
                     console.log(doc.id, " => ", doc.data());
+                    // For this to work, we need to keep containers at 1. !!!
+                    currentDoc = doc;
                     document.getElementById("data" + i).style.display = "block";
 
                     document.getElementById("name" + i).innerHTML = "Name: " + doc.get("name");
                     document.getElementById("email" + i).innerHTML = "Email: " + doc.get("email");
-                    document.getElementById("experience" + i).innerHTML = "Experience/Background: " + doc.get("exp");
+                    document.getElementById("experience" + i).innerHTML = doc.get("exp");
+
+                    document.getElementById("next-button").style.display = "block";
 
                     i++;
                 });
 
                 if(i == 0) {
-                    alert("No more point data available. Choose another project.");
+                    alert("No more account requests to view.");
                     const button = document.getElementById("next-button");
                     return;
                 }
@@ -246,12 +284,100 @@
 
                 // Construct a new query starting at this document,
                 // get the next 2 points.
-                next = db.collection(projectType)
-                .orderBy("timestamp", "desc")
+                next = db.collection("requests")
                 .startAfter(lastVisible)
-                .limit(2);      
+                .limit(containers);      
                 
             });
+        }
+
+        /* When the user clicks on the button,
+        toggle between hiding and showing the dropdown content */
+        document.getElementById("approve-btn").onclick = function () {
+            document.getElementById("appDropdown").classList.toggle("show");
+        }
+
+        /* When the user clicks on the button,
+        toggle between hiding and showing the dropdown content */
+        document.getElementById("reject-btn").onclick = function () {
+            document.getElementById("rejDropdown").classList.toggle("show");
+        }
+
+        //Close the dropdown menu if the user clicks outside of it
+        //Currently breaks the element.classList.toggle function above
+        // window.onclick = function(event) {
+        //     if (!event.target.matches('.approve-btn')) {
+        //         var dropdowns = document.getElementsByClassName("appDropdown");
+        //         var i;
+        //         for (i = 0; i < dropdowns.length; i++) {
+        //             var openDropdown = dropdowns[i];
+        //             if (openDropdown.classList.contains('show')) {
+        //                 openDropdown.classList.remove('show');
+        //             }
+        //         }
+        //     }
+        //     if (!event.target.matches('.reject-btn')) {
+        //         var dropdowns = document.getElementsByClassName("rejDropdown");
+        //         var i;
+        //         for (i = 0; i < dropdowns.length; i++) {
+        //             var openDropdown = dropdowns[i];
+        //             if (openDropdown.classList.contains('show')) {
+        //                 openDropdown.classList.remove('show');
+        //             }
+        //         }
+        //     }
+        // }
+
+        //*************************
+        //*************************
+        // Approve or Reject Users - Functions
+        //*************************
+        //*************************
+
+        document.getElementById("confirm-app").onclick = function () {
+            var email = currentDoc.id;
+            var code = currentDoc.get("code");
+
+            secondaryApp.auth().createUserWithEmailAndPassword(email, code).then(function() {
+                console.log("User successfully created.");
+
+                var email = currentDoc.id;
+                console.log("Deleting doc" + email);
+                db.collection("requests").doc(email).delete().then(function() {
+                    console.log("Document successfully deleted!");
+                    pullData();
+                }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                });
+
+                secondaryApp.auth().signOut();
+                console.log("User successfully signed out.");
+                secondaryApp.delete();
+
+            }).catch(function(error) {
+                console.log(error);
+            });
+        }
+
+        document.getElementById("confirm-rej").onclick = function () {
+            //var email = document.getElementById("email0").textContent.substring(7);
+            // currentDoc is populated by pullData() method
+            var email = currentDoc.id;
+            console.log(firebase.auth().currentUser.uid);
+            db.collection("requests").doc(email).delete().then(function() {
+                console.log("Document successfully deleted!");
+                pullData();
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+        }
+
+        document.getElementById("signout-btn").onclick = function () {
+            if (firebase.auth().currentUser) {
+                // [START signout]
+                firebase.auth().signOut();
+                // [END signout]
+            }
         }
 
         </script>

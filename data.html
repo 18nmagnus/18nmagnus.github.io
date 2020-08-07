@@ -281,9 +281,12 @@
                         document.getElementById("photo" + i).innerHTML = "Photo: [none]";
                         var img = document.getElementById("point_photo" + i);
                         img.src = "./photos/noimage.png";
-                        document.getElementById("next-button").style.display = "block";
+                        // Does the next-button style.display line go here?
+                        // It was previously on this line
+                        // Moved to below timestamp
                     }
                     document.getElementById("time" + i).innerHTML = "Timestamp: " + doc.get("timestamp");
+                    document.getElementById("next-button").style.display = "block";
 
                     i++;
                     console.log(i);
